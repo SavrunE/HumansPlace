@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraBorder : MonoBehaviour
+public class BorderCamera : MonoBehaviour
 {
     private static float border = 0;
     

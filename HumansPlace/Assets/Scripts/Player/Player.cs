@@ -8,25 +8,43 @@ public class Player : MonoBehaviour
     [SerializeField] private float health = 100f;
     [Range(0.1f, 5f)]
     [SerializeField] private float speed = 1f;
+    [SerializeField] private int Score = 0;
     public DamageStrongParameters DamageStrongParameters;
+    SaySomethink Say;
+    ShakeCamera screenShaker;
+
+    public event OnCoinTake CoinTake;
+    public delegate void OnCoinTake(int totalCoins);
+
     private void Start()
     {
+        Say.OnHit += delegate ()
+        {
+            Debug.Log("OnHit");
+        };
         transform.position = startPosition;
         var Fliper = GetComponent<SpriteRenderer>();
     }
     private void FixedUpdate()
     {
-        if (Input.GetKey(KeyCode.LeftArrow) && transform.position.x > -CameraBorder.Border)
+        if (Input.GetKey(KeyCode.LeftArrow) && transform.position.x > -BorderCamera.Border)
         {
             transform.Translate(Vector3.left * speed * Time.fixedDeltaTime);
             
         }
-        else if (Input.GetKey(KeyCode.RightArrow) && transform.position.x < CameraBorder.Border)
+        else if (Input.GetKey(KeyCode.RightArrow) && transform.position.x < BorderCamera.Border)
             transform.Translate(Vector3.right * speed * Time.fixedDeltaTime); 
     }
+
    
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (collision.gameObject.TryGetComponent(out Coin coin))
+        {
+            Score++;
+            Destroy(collision.gameObject);
+
+        }
         var attacker = collision.gameObject;
         
         if (EnemySpawner.Enemies.ContainsKey(attacker))
@@ -52,4 +70,27 @@ public class Player : MonoBehaviour
         }
         Destroy(attacker);
     }
+
+    void Action()
+    {
+        Say.AY();
+    }
+    void EnemyTakeHit()
+    {
+        Score++;
+        Debug.Log(Score);
+    }
+    void PlayerTakeHit()
+    {
+        health--;
+        screenShaker.DoShake();
+    }
+    
+    public void TakeCoin()
+    {
+        Score++;
+        CoinTake?.Invoke(Score);
+    }
+
+
 }
