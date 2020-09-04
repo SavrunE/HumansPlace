@@ -5,12 +5,12 @@ using UnityEngine.UI;
 
 public class DataBaseInventory : MonoBehaviour
 {
-    public List<Item> items = new List<Item>();
+    public List<Item> Items = new List<Item>();
 }
 [System.Serializable]
 public class Item
 {
     public int ID;
-    public string name;
-    public Sprite img;
+    public string Name;
+    public Sprite Image;
 }
