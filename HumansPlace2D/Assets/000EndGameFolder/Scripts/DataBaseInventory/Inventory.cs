@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 
 public class Inventory : MonoBehaviour
 {
+    [SerializeField] KeyCode KeyToUseInventory;
     public DataBaseInventory Data;
 
     public List<ItemInventory> Items = new List<ItemInventory>();
@@ -16,8 +17,9 @@ public class Inventory : MonoBehaviour
     public GameObject InventoryMain;
 
     public int MaxCount;
+    public int MaxItemInOneCell;//кол-во предметов в 1 ячейке, нужно будет задать количество в зависимости от типа предмета.
 
-    public Camera camera;
+    public Camera MainCamera;
     public EventSystem eventSystem;
 
     public int currentID;
@@ -25,6 +27,9 @@ public class Inventory : MonoBehaviour
 
     public RectTransform movingObject;
     public Vector3 offset;
+
+    public GameObject backGround;
+
 
     private void Start()
     {
@@ -36,7 +41,7 @@ public class Inventory : MonoBehaviour
         {
             AddItem(i, Data.Items[Random.Range(0, Data.Items.Count)], Random.Range(1, 99));
         }
-        UpdateInvectory();
+        UpdateInventory();
     }
     public void Update()
     {
@@ -44,6 +49,48 @@ public class Inventory : MonoBehaviour
         {
             MoveObject();
         }
+        if (Input.GetKeyDown(KeyToUseInventory))
+        {
+            backGround.SetActive(!backGround.activeSelf);
+            if (backGround.activeSelf)
+            {
+                UpdateInventory();
+            }
+        }
+    }
+
+    public void SearchForSameItem(Item item, int count)
+    {
+        for (int i = 0; i < MaxCount; i++)
+        {
+            if (Items[i].ID == item.ID)
+            {
+                if (Items[i].Count < MaxItemInOneCell)
+                {
+                    Items[i].Count += count;
+                    if (Items[i].Count > MaxItemInOneCell)
+                    {
+                        count = Items[i].Count - MaxItemInOneCell;//128
+                        Items[i].Count = MaxItemInOneCell / 2; //64;//чеего блять
+                    }
+                    else
+                    {
+                        count = 0;
+                        i = MaxCount;
+                    }
+                }
+            }
+        }
+
+        if (count > 0)
+            for (int i = 0; i < MaxCount; i++)
+            {
+                if (Items[i].ID == 0)
+                {
+                    AddItem(i, item, count);
+                    i = MaxCount;
+                }
+            }
     }
 
     public void AddItem(int id, Item item, int count)
@@ -101,12 +148,12 @@ public class Inventory : MonoBehaviour
 
         }
     }
-    public void UpdateInvectory()
+    public void UpdateInventory()
     {
         for (int i = 0; i < MaxCount; i++)
         {
             if (Items[i].ID != 0 && Items[i].Count > 1)
-                Items[i].Item.GetComponentInChildren<Text>().text = Items[i].ToString();
+                Items[i].Item.GetComponentInChildren<Text>().text = Items[i].Count.ToString();
             else
                 Items[i].Item.GetComponentInChildren<Text>().text = "";
             Items[i].Item.GetComponent<Image>().sprite = Data.Items[Items[i].ID].Image;
@@ -127,9 +174,27 @@ public class Inventory : MonoBehaviour
         }
         else
         {
-            AddInventoryItem(currentID, Items[int.Parse(eventSystem.currentSelectedGameObject.name)]);
+            ItemInventory II = Items[int.Parse(eventSystem.currentSelectedGameObject.name)];
 
-            AddInventoryItem(int.Parse(eventSystem.currentSelectedGameObject.name), currentItem);
+            if (currentItem.ID != II.ID)
+            {
+                AddInventoryItem(currentID, II);
+
+                AddInventoryItem(int.Parse(eventSystem.currentSelectedGameObject.name), currentItem);
+            }
+            else
+            {
+                if(II.Count + currentItem.Count <= MaxItemInOneCell)
+                {
+                    II.Count += currentItem.Count;
+                }
+                else
+                {
+                    AddItem(currentID, Data.Items[II.ID], II.Count + currentItem.Count - MaxItemInOneCell);
+                    II.Count = MaxItemInOneCell;
+                }
+                II.Item.GetComponentInChildren<Text>().text = II.Count.ToString();
+            }
             currentID = -1;
             movingObject.gameObject.SetActive(false);
         }
@@ -138,7 +203,7 @@ public class Inventory : MonoBehaviour
     {
         Vector3 positionOffset = Input.mousePosition + offset;
         positionOffset.z = InventoryMain.GetComponent<RectTransform>().position.z;
-        movingObject.position = camera.ScreenToWorldPoint(positionOffset);
+        movingObject.position = MainCamera.ScreenToWorldPoint(positionOffset);
     }
 
     public ItemInventory CopyInventoryItem(ItemInventory old)

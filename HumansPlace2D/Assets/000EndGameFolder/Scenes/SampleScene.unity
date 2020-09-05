@@ -140,7 +140,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &37909452
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1744,12 +1744,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ff8d83664defe0448546df1215c0787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  KeyToUseInventory: 105
   Data: {fileID: 963194230}
   Items: []
   ItemShow: {fileID: 108855232030772276, guid: d815d078683855743964b8ce0271739e, type: 3}
   InventoryMain: {fileID: 1024248012}
   MaxCount: 36
-  camera: {fileID: 963194227}
+  MaxItemInOneCell: 128
+  MainCamera: {fileID: 963194227}
   eventSystem: {fileID: 2033832935}
   currentID: -1
   currentItem:
@@ -1758,6 +1760,7 @@ MonoBehaviour:
     Count: 0
   movingObject: {fileID: 97873046}
   offset: {x: 1, y: -1, z: 0}
+  backGround: {fileID: 37909451}
 --- !u!1 &972950843
 GameObject:
   m_ObjectHideFlags: 0
@@ -1880,7 +1883,7 @@ MonoBehaviour:
   m_StartCorner: 0
   m_StartAxis: 0
   m_CellSize: {x: 40, y: 40}
-  m_Spacing: {x: 10, y: 10}
+  m_Spacing: {x: 20, y: 20}
   m_Constraint: 0
   m_ConstraintCount: 2
 --- !u!114 &1024248014
