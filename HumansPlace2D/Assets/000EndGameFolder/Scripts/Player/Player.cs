@@ -23,6 +23,13 @@ public class Player : MonoBehaviour
     public delegate void OnCoinTake(int totalCoins);
 
     private Animator animator;
+
+    [SerializeField] private int countOfAttacks;
+
+    private bool isAttacking;
+    private bool isDefended;
+    private bool isTakeDamage;
+    private bool safferingPain;
     private void Awake()
     {
         Singleton = this;
@@ -51,9 +58,25 @@ public class Player : MonoBehaviour
         else if (LookOnLeft == false && HorizontalInput > 0)
             Flip();
         if (HorizontalInput != 0 || VerticalInput != 0)
-            animator.SetBool("IsRuning", true);
+            animator.SetBool("IsRunning", true);
         else
-            animator.SetBool("IsRuning", false);
+            animator.SetBool("IsRunning", false);
+    }
+    private void FixedUpdate()
+    {
+        if (Input.GetKey(KeyCode.Q) && !isAttacking)
+        {
+            isAttacking = true;
+
+            int randomAttack = UnityEngine.Random.Range(1, countOfAttacks);
+            Debug.Log(randomAttack);
+            animator.Play("Attack" + randomAttack);
+
+            Invoke("RessetAttack", 0.5f);
+            //animator.SetBool("HitEnemy", true);  
+        }
+        
+        
     }
 
    
@@ -119,5 +142,9 @@ public class Player : MonoBehaviour
         transform.localScale = Scaler;
     }
 
+    void RessetAttack()
+    {
+        isAttacking = false;
+    }
 
 }
