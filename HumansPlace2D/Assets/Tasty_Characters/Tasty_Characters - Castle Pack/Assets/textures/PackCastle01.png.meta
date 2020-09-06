@@ -278,6 +278,9 @@ TextureImporter:
   - first:
       213: 21300182
     second: PackCastle01_91
+  - first:
+      213: -8284750476859613805
+    second: PackCastle01_92
   externalObjects: {}
   serializedVersion: 11
   mipmaps:

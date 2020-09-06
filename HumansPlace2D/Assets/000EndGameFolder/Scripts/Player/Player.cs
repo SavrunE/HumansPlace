@@ -24,7 +24,10 @@ public class Player : MonoBehaviour
 
     private Animator animator;
 
+    public float attackDelay = 1f;//заменить на класс атаки или ченеть типо того
     [SerializeField] private int countOfAttacks;
+    [SerializeField] private GameObject attackHitBox;
+
 
     private bool isAttacking;
     private bool isDefended;
@@ -36,13 +39,16 @@ public class Player : MonoBehaviour
     }
     private void Start()
     {
+        attackHitBox.SetActive(false);
         animator = GetComponent<Animator>();
         PlayersRigidbody = GetComponent<Rigidbody2D>();
         //Say.OnHit += delegate ()
         //{
         //    Debug.Log("OnHit");
         //};
-        transform.position = startPosition;
+        
+        
+        //transform.position = startPosition;
     }
     private void Update()
     {
@@ -69,11 +75,9 @@ public class Player : MonoBehaviour
             isAttacking = true;
 
             int randomAttack = UnityEngine.Random.Range(1, countOfAttacks);
-            Debug.Log(randomAttack);
             animator.Play("Attack" + randomAttack);
 
-            Invoke("RessetAttack", 0.5f);
-            //animator.SetBool("HitEnemy", true);  
+            StartCoroutine(DoAttack());
         }
         
         
@@ -89,8 +93,10 @@ public class Player : MonoBehaviour
 
         }
         var attacker = collision.gameObject;
-        
-        if (EnemySpawner.Enemies.ContainsKey(attacker))
+
+
+        //что-то с этим сделать нужно
+        if (collision.gameObject.TryGetComponent(out EnemySpawner enemy) && EnemySpawner.Enemies.ContainsKey(attacker)) 
         {
             float hit = EnemySpawner.Enemies[attacker].Attack;
             health -= hit;
@@ -111,7 +117,7 @@ public class Player : MonoBehaviour
             if (hit <= DamageStrongParameters.Terrible)
                 Debug.Log("!!!THAT Was a JOKE!!!");
         }
-        Destroy(attacker);
+        
     }
 
     void Action()
@@ -142,9 +148,15 @@ public class Player : MonoBehaviour
         transform.localScale = Scaler;
     }
 
-    void RessetAttack()
+
+    IEnumerator DoAttack()
     {
+        attackHitBox.SetActive(true);
+        yield return new WaitForSeconds(attackDelay);
+        attackHitBox.SetActive(false);
         isAttacking = false;
     }
+
+    
 
 }
