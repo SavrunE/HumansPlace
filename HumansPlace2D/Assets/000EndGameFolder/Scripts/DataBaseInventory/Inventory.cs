@@ -108,7 +108,6 @@ public class Inventory : MonoBehaviour
             Items[id].Item.GetComponentInChildren<Text>().text = "";
         }
     }
-    //попробую скомпоновать 2 эти ↕ методы в 1 через var
     public void AddInventoryItem(int id, ItemInventory item)
     {
         Items[id].ID = item.ID; 

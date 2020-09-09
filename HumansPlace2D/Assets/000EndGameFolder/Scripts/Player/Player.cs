@@ -8,12 +8,10 @@ public class Player : MonoBehaviour
     public static Player Singleton { get; private set; }
     [SerializeField] private Vector3 startPosition;
     [SerializeField] private float health = 100f;
-    [Range(1f, 25f)]
+    [Range(1f, 5f)]
     [SerializeField] private float speed = 1f;
     [SerializeField] private int Score = 0;
     public DamageStrongParameters DamageStrongParameters;
-    SaySomethink Say;
-    ShakeCamera screenShaker;
 
     public bool LookOnLeft;
 
@@ -120,20 +118,13 @@ public class Player : MonoBehaviour
         
     }
 
-    void Action()
-    {
-        Say.AY();
-    }
+   
     void EnemyTakeHit()
     {
         Score++;
         Debug.Log(Score);
     }
-    void PlayerTakeHit()
-    {
-        health--;
-        screenShaker.DoShake();
-    }
+
     
     public void TakeCoin()
     {
