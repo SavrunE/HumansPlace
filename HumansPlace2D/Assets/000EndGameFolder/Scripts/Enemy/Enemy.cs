@@ -5,19 +5,19 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    private EnemyData data;
+    private EnemyCharacter data;
     bool isShaking = false;
     float shake = 2f;
     Vector2 position;
-
-    public void Init(EnemyData data)
+    private float speed = 1f;
+    public void Init(EnemyCharacter data)
     {
         this.data = data;
-        GetComponent<SpriteRenderer>().sprite = data.MainSprite;
+        //GetComponent<GameObject>() = data.Character;
     }
     public float Attack
     {
-        get { return data.Attack; }
+        get { return data.AttackDamage; }
         protected set { }
     }
     public static Action<GameObject> OnEnemyOverFly;
@@ -33,10 +33,12 @@ public class Enemy : MonoBehaviour
     void Update()
     {
         
+        transform.Translate(Vector2.left * speed * Time.deltaTime);
         if (isShaking)
         {
             position = transform.position;
             transform.position = position + UnityEngine.Random.insideUnitCircle * shake;
+            transform.position = position;
         }
     }
     
@@ -53,5 +55,15 @@ public class Enemy : MonoBehaviour
     void StopShaking()
     {
         isShaking = false;
+    }
+
+    public void TakeDamage(float damage)
+    {
+        data.Health -= damage;
+        if (data.Health <= 0)
+        {
+            Destroy(gameObject);
+        }
+        
     }
 }

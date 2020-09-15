@@ -2,24 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-abstract class Unit 
+abstract class Unit
 {
     private IClosestUnitFinder enemyFinder;
-    private Func<Unit, bool> enemyChecker;
-
-    public Unit(IClosestUnitFinder EnemyFinder, Func<Unit, blood> EnemyChecker)
+    private Func<Unit> enemyChecker;
+    //Func<Unit, blood>
+    public Unit(IClosestUnitFinder EnemyFinder, Func<Unit> EnemyChecker)
     {
         enemyFinder = EnemyFinder;
         enemyChecker = EnemyChecker;
-        
+
     }
 
-    void Update()
-    {
-        var enemy = enemyFinder.Find();
-        if (enemy != null && enemyChecker(enemy))
-            Attempt(enemy);
-    }
+    //void Update()
+    //{
+    //    var enemy = enemyFinder.Find();
+    //    if (enemy != null && enemyChecker.enemy)
+    //        Attempt(enemy);
+    //}
     protected abstract void Attempt(Unit unit);
 }
 
@@ -29,6 +29,7 @@ interface IClosestUnitFinder
 }
 interface Func<T> : IDamage
 {
+   
     
 }
 

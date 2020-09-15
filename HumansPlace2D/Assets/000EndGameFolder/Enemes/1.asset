@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05ededc22512d634abb87ee7dd275a19, type: 3}
   m_Name: 1
   m_EditorClassIdentifier: 
-  mainSprite: {fileID: 21300000, guid: 1551940e71b3b784b80759cd36a78f7c, type: 3}
+  Character: {fileID: 0}
   speed: 1
-  attack: 4
+  attackDamage: 2
+  health: 6

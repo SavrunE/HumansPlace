@@ -30,7 +30,7 @@ public class WeaponController : MonoBehaviour
         if (CheckDelayToAttack <= 0)
         {
             StartCoroutine(RangeWeaponAttack());
-
+            CheckDelayToAttack = DelayToAttack;
 
         }
         CheckDelayToAttack -= Time.fixedDeltaTime;

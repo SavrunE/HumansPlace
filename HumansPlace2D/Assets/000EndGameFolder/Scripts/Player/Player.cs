@@ -6,25 +6,56 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public static Player Singleton { get; private set; }
-    [SerializeField] private Vector3 startPosition;
-    [SerializeField] private float health = 100f;
+
+    public ControllerType Controller;
+    public enum ControllerType { PC, Android }
+    public Joystick JoystickMove;
+    public Joystick JoystickAttack;
+
     [Range(1f, 5f)]
     [SerializeField] private float speed = 1f;
-    [SerializeField] private int Score = 0;
+    public float Health { get; set; }
+    public int Score { get; set; }
+
     public DamageStrongParameters DamageStrongParameters;
-
-    public bool LookOnLeft;
-
-    private Rigidbody2D PlayersRigidbody;
-
     public event OnCoinTake CoinTake;
     public delegate void OnCoinTake(int totalCoins);
 
+    private Rigidbody2D PlayersRigidbody;
     private Animator animator;
 
     public float attackDelay = 1f;//заменить на класс атаки или ченеть типо того
     [SerializeField] private int countOfAttacks;
     [SerializeField] private GameObject attackHitBox;
+
+    private int experience;
+    public int Experience
+    {
+        get
+        {
+            return experience;
+        }
+        set
+        {
+            experience = value;
+        }
+    }
+    public int Level
+    {
+        get
+        {
+            return experience / 1000;
+        }
+        set
+        {
+            experience = value * 1000;
+        }
+    }
+
+    private Vector2 moveInput;
+    private Vector2 moveVelocity;
+    public bool LookOnLeft;
+
 
 
     private bool isAttacking;
@@ -40,34 +71,47 @@ public class Player : MonoBehaviour
         attackHitBox.SetActive(false);
         animator = GetComponent<Animator>();
         PlayersRigidbody = GetComponent<Rigidbody2D>();
+
         //Say.OnHit += delegate ()
         //{
         //    Debug.Log("OnHit");
         //};
-        
-        
+
+
         //transform.position = startPosition;
     }
     private void Update()
     {
-        float HorizontalInput = Input.GetAxis("Horizontal");
-        float VerticalInput = Input.GetAxis("Vertical");
+        //float HorizontalInput;
+        //float VerticalInput;
 
-        Vector2 movement = new Vector2(HorizontalInput, VerticalInput);
 
-        PlayersRigidbody.MovePosition(PlayersRigidbody.position + movement * speed * Time.deltaTime);
+        if (Controller == ControllerType.PC)
+        {
+            moveInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        }
+        else
+        {
+            moveInput = new Vector2(JoystickMove.Horizontal, JoystickMove.Vertical);
+        }
 
-        if (LookOnLeft == true && HorizontalInput < 0)
+
+
+
+
+
+        if (LookOnLeft == true && moveInput.x < 0)
             Flip();
-        else if (LookOnLeft == false && HorizontalInput > 0)
+        else if (LookOnLeft == false && moveInput.x > 0)
             Flip();
-        if (HorizontalInput != 0 || VerticalInput != 0)
+        if (moveInput != Vector2.zero)
             animator.SetBool("IsRunning", true);
         else
             animator.SetBool("IsRunning", false);
     }
     private void FixedUpdate()
     {
+        PlayersRigidbody.MovePosition(PlayersRigidbody.position + moveInput * speed * Time.deltaTime);
         if (Input.GetKey(KeyCode.Q) && !isAttacking)
         {
             isAttacking = true;
@@ -77,11 +121,9 @@ public class Player : MonoBehaviour
 
             StartCoroutine(DoAttack());
         }
-        
-        
     }
 
-   
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.TryGetComponent(out Coin coin))
@@ -94,10 +136,10 @@ public class Player : MonoBehaviour
 
 
         //что-то с этим сделать нужно
-        if (collision.gameObject.TryGetComponent(out EnemySpawner enemy) && EnemySpawner.Enemies.ContainsKey(attacker)) 
+        if (collision.gameObject.TryGetComponent(out EnemySpawner enemy) && EnemySpawner.Enemies.ContainsKey(attacker))
         {
             float hit = EnemySpawner.Enemies[attacker].Attack;
-            health -= hit;
+            Health -= hit;
             if (hit <= DamageStrongParameters.Low)
                 Debug.Log("HAHAHA low damage can't stop me now! -" + hit + "HP");
             else if (hit <= DamageStrongParameters.Normal)
@@ -107,7 +149,7 @@ public class Player : MonoBehaviour
             else if (hit <= DamageStrongParameters.Terrible)
                 Debug.Log("My life is over, die is coming, soon. -" + hit + "HP");
 
-            if (health <= 0)
+            if (Health <= 0)
             {
                 Destroy(gameObject);
                 Debug.Log("!@#$%, ты проиграл!");
@@ -115,17 +157,17 @@ public class Player : MonoBehaviour
             if (hit <= DamageStrongParameters.Terrible)
                 Debug.Log("!!!THAT Was a JOKE!!!");
         }
-        
+
     }
 
-   
+
     void EnemyTakeHit()
     {
         Score++;
         Debug.Log(Score);
     }
 
-    
+
     public void TakeCoin()
     {
         Score++;
@@ -148,6 +190,6 @@ public class Player : MonoBehaviour
         isAttacking = false;
     }
 
-    
+
 
 }

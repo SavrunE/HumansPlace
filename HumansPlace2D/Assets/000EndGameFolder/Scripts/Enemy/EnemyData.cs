@@ -5,22 +5,24 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Enemies/Standart Enemy", fileName = "New Enemy")]
 public class EnemyData : ScriptableObject
 {
-    [SerializeField] private Sprite mainSprite;
-    public Sprite MainSprite
-    {
-        get { return mainSprite; }
-        protected set { }
-    }
-    [SerializeField] private float speed;
+    public GameObject Character;
+   
+    [SerializeField] private float speed = 1f;
     public float Speed
     {
         get { return speed; }
         set { }
     }
-    [SerializeField] private float attack;
-    public float Attack
+    [SerializeField] private float attackDamage = 2f;
+    public float AttackDamage
     {
-        get { return attack; }
+        get { return attackDamage; }
+        set { }
+    }
+    [SerializeField] private float health = 5f;
+    public float Health
+    {
+        get { return health; }
         set { }
     }
 }
